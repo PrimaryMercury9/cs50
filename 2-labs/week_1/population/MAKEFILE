@@ -1,0 +1,5 @@
+CC = clang
+LIBS = -lcs50
+
+%: %.c
+    $(CC) $(LIBS) -o $@ $<
