@@ -1,73 +1,122 @@
 #include <cs50.h>
 #include <stdio.h>
+#include <string.h>
 
-/*
-report (via printf) whether it is a valid American Express, MasterCard, or Visa
-card number, per the definitions of each’s format herein. 
-Catch inputs that are not credit card numbers (e.g., a phone number)
-Last line of output to be AMEX\n or MASTERCARD\n or VISA\n or INVALID\n
-*/
-
-/* Test numbers
-AMEX       378282246310005
-AMEX       371449635398431
-AMEX       378734493671000
-Diners     30569309025904
-Discover   6011111111111117
-Discover   6011000990139424
-JCB	       3530111333300000
-JCB	       3566002020360505
-Mastercard 2221000000000009
-Mastercard 2223000048400011
-Mastercard 2223016768739313
-Mastercard 5555555555554444
-Mastercard 5105105105105100
-Visa       4111111111111111
-Visa       4012888888881881
-Visa       4222222222222
-*/
-
-int get_card_number(void) {
+unsigned long long get_card_number(void) {
     unsigned long long number = get_long_long("Enter your credit card number: ");
     return number;
 }
 
-char get_card_provider(unsigned long long number) {
-    printf("%lld\n", number);
+char * get_card_provider(unsigned long long number) {
     unsigned long long first;
     first = number;
+    char provider[] = "";
     while(first >= 10)
     {
         first = first / 10;
     }
     if (first == 4) {
-        printf("VISA");
-    else {
+        return "VISA";
+    } else {
         first = number;
-        while(first >= 10)
+        while(first >= 100)
         {
             first = first / 10;
         }
         if (first == 34 || first == 37) {
-            printf("AMEX");
-        else if (first == 
+            return "AMEX";
+        } else if (first == 51 || first == 52 || first == 53 || first == 54 || first == 55) {
+            return "MASTERCARD";
+        } else {
+            return "INVALID";
+        }
+    }
+}
+
+char * check_card_valid(unsigned long long number, char * provider) {
+    //Count the number of digits in the card number
+    int count = 1;
+    while (number > 10)
+    {
+        number = number / 10;
+        count = count + 1;
     }
 
-    printf("The first number is: %llu\n", first);
-
+    //Confirm number of digits is correct as per speicifcation
+    if (strcmp(provider,"VISA") == 0) {
+        if (count == 13 || count == 16) {
+            return "Valid";
+        }
+    }
+    if (strcmp(provider,"AMEX") == 0) {
+        if (count == 15) {
+            return "Valid";
+        }
+    }
+    if (strcmp(provider, "MASTERCARD") == 0) {
+        if (count == 16) {
+            return "Valid";
+        }
+    } else {
+        return "INVALID";
+    }
+        return "INVALID";
 }
-/*
-American Express numbers start with 34 or 37
-American Express uses 15-digit numbers
 
-MasterCard numbers start with 51, 52, 53, 54, or 55
-MasterCard uses 16-digit numbers
+int check_card_number(unsigned long long number) {
+    int mod = 0;
+    int sum = 0;
+    while (number > 0) {
+        mod = number % 10;
+        number = number / 10;
+        mod = number % 10;
+        number = number / 10;
+        if ((mod * 2) > 9){
+            sum = sum + ((mod * 2) % 10) + ((mod * 2) / 10);
+        } else {
+            sum = sum + mod * 2;
+        }
+    }
+    return sum;
+}
 
-Visa numbers start with 4
-Visa uses 13- and 16-digit numbers
-*/
+int add_other_numbers(unsigned long long number) {
+    int mod = 0;
+    int sum = 0;
+    while (number > 0) {
+        mod = number % 10;
+        number = number / 10;
+        sum = sum + mod;
+        mod = number % 10;
+        number = number / 10;
+        }
+    return sum;
+}
+
+bool final_check(int sum) {
+
+    int finalDig = sum % 10;
+    if (finalDig == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 int main(void) 
 {
     unsigned long long number = get_card_number();   
-    char provider = get_card_provider(number);
+    char * provider = get_card_provider(number);
+    printf("Provider: %s\n", provider);
+    char * valid = check_card_valid(number, provider);
+    printf("Length: %s\n", valid);
+    int num = check_card_number(number);
+    int num2 = add_other_numbers(number);
+    num = num + num2;
+    bool validity = final_check(num);
+    if (validity == true) {
+        printf("Number: Valid\n");
+    } else {
+        printf("Number: Invalid\n");
+    }
 }
