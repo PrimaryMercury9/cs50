@@ -1,10 +1,7 @@
-// Check that a password has at least one lowercase letter, uppercase letter, number and symbol
-// Practice iterating through a string
-// Practice using the ctype library
-
 #include <cs50.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 bool valid(string password);
 
@@ -21,7 +18,6 @@ int main(void)
     }
 }
 
-// TODO: Complete the Boolean function below
 bool valid(string password)
 {
     bool caps = false;
@@ -30,25 +26,16 @@ bool valid(string password)
     bool symbol = false;
 
     for (int i = 0; i < strlen(password); i++) {
-        if (password[i] >= 65 && password[i] <=90) {
+        if (isupper(password[i])) {
             caps = true;
         }
-        if (password[i] >= 97 && password[i] <=122) {
+        if (islower(password[i])) {
             lower = true;
         }
-        if (password[i] >= 48 && password[i] <=57) {
+        if (isdigit(password[i])) {
             number = true;
         }
-        if (password[i] >= 33 && password[i] <=47) {
-            symbol = true;
-        }
-        if (password[i] >= 58 && password[i] <=64) {
-            symbol = true;
-        }
-        if (password[i] >= 91 && password[i] <=96) {
-            symbol = true;
-        }
-        if (password[i] >= 123 && password[i] <=126) {
+        if (ispunct(password[i])) {
             symbol = true;
         }
     }
